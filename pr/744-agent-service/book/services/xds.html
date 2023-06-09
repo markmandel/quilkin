@@ -156,6 +156,14 @@ complexity of a full xDS management control plane via integrations with popular
 projects and common architecture patterns.</p>
 <p>To view all the providers and options for the <code>manage</code> subcommand, run:</p>
 <pre><code class="language-shell">$ quilkin manage --help
+warning: use of deprecated function `base64::decode`: Use Engine::decode
+  --&gt; src/config/providers/k8s/agones.rs:79:38
+   |
+79 |                         .map(base64::decode)
+   |                                      ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
 Runs Quilkin as a xDS management server, using `provider` as a configuration source
 
 Usage: quilkin manage [OPTIONS] &lt;COMMAND&gt;

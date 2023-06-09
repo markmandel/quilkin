@@ -190,6 +190,14 @@ proxy. To see a basic usage of the command-line interface run through the
 for deploying quilkin for your game network.</li>
 </ul>
 <pre><code class="language-shell">$ quilkin --help
+warning: use of deprecated function `base64::decode`: Use Engine::decode
+  --&gt; src/config/providers/k8s/agones.rs:79:38
+   |
+79 |                         .map(base64::decode)
+   |                                      ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
 The Command-Line Interface for Quilkin
 
 Usage: quilkin [OPTIONS] &lt;COMMAND&gt;
@@ -220,7 +228,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.6.0-dev-a8404a6
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.6.0-dev-0c7a549
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -613,6 +621,14 @@ proxies will route to the Allocated GameServer, and you can play a gamee!</p>
 proxy.</p>
 <p>To view all the options for the <code>proxy</code> subcommand, run: </p>
 <pre><code class="language-shell">$ quilkin proxy --help
+warning: use of deprecated function `base64::decode`: Use Engine::decode
+  --&gt; src/config/providers/k8s/agones.rs:79:38
+   |
+79 |                         .map(base64::decode)
+   |                                      ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
 Run Quilkin as a UDP reverse proxy
 
 Usage: quilkin proxy [OPTIONS]
@@ -2147,6 +2163,14 @@ complexity of a full xDS management control plane via integrations with popular
 projects and common architecture patterns.</p>
 <p>To view all the providers and options for the <code>manage</code> subcommand, run:</p>
 <pre><code class="language-shell">$ quilkin manage --help
+warning: use of deprecated function `base64::decode`: Use Engine::decode
+  --&gt; src/config/providers/k8s/agones.rs:79:38
+   |
+79 |                         .map(base64::decode)
+   |                                      ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
 Runs Quilkin as a xDS management server, using `provider` as a configuration source
 
 Usage: quilkin manage [OPTIONS] &lt;COMMAND&gt;
@@ -2393,6 +2417,14 @@ relay's ADS endpoint, you use the same <code>--management-server</code> argument
 connecting to control planes.</p>
 <p>To view all options for the <code>relay</code> subcommand, run:</p>
 <pre><code class="language-shell">$ quilkin relay --help
+warning: use of deprecated function `base64::decode`: Use Engine::decode
+  --&gt; src/config/providers/k8s/agones.rs:79:38
+   |
+79 |                         .map(base64::decode)
+   |                                      ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
 Runs Quilkin as a relay service that runs a Manager Discovery Service (mDS) for accepting cluster and configuration information from xDS management services, and exposing it as a single merged xDS service for proxy services
 
 Usage: quilkin relay [OPTIONS] [COMMAND]
