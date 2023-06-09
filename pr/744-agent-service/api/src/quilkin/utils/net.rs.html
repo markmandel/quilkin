@@ -111,6 +111,59 @@
 <span id="111">111</span>
 <span id="112">112</span>
 <span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -127,11 +180,13 @@
  * limitations under the License.
  */
 
-</span><span class="kw">use </span><span class="kw">crate</span>::Result;
+</span><span class="kw">use </span>std::{io, net::SocketAddr};
+
 <span class="kw">use </span>socket2::{Protocol, Socket, Type};
-<span class="kw">use </span>std::{io, net::SocketAddr};
 <span class="kw">use </span>tokio::net::UdpSocket;
 <span class="kw">use </span>tokio::select;
+
+<span class="kw">use </span><span class="kw">crate</span>::Result;
 
 <span class="doccomment">/// returns a UdpSocket with address and port reuse.
 </span><span class="kw">pub fn </span>socket_with_reuse(port: u16) -&gt; <span class="prelude-ty">Result</span>&lt;UdpSocket&gt; {
@@ -164,13 +219,24 @@
 }
 
 <span class="doccomment">/// Socket that can accept and send data from either a local ipv4 address or ipv6 address.
-</span><span class="kw">pub struct </span>DualDomainSocket {
+</span><span class="kw">pub struct </span>DualStackLocalSocket {
     v4: UdpSocket,
     v6: UdpSocket,
 }
 
-<span class="kw">impl </span>DualDomainSocket {
-    <span class="kw">pub fn </span>new(port: u16) -&gt; <span class="prelude-ty">Result</span>&lt;DualDomainSocket&gt; {
+<span class="kw">impl </span>DualStackLocalSocket {
+    <span class="kw">pub fn </span>new(port: u16) -&gt; <span class="prelude-ty">Result</span>&lt;DualStackLocalSocket&gt; {
+        <span class="comment">// if ephemeral port, make sure they are on the same ports.
+        </span><span class="kw">if </span>port == <span class="number">0 </span>{
+            <span class="kw">let </span>v4 = socket_with_reuse_and_address((std::net::Ipv4Addr::UNSPECIFIED, port).into())<span class="question-mark">?</span>;
+            <span class="kw">let </span>port = v4.local_addr()<span class="question-mark">?</span>.port();
+
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+                v4,
+                v6: socket_with_reuse_and_address((std::net::Ipv6Addr::UNSPECIFIED, port).into())<span class="question-mark">?</span>,
+            });
+        }
+
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             v4: socket_with_reuse_and_address((std::net::Ipv4Addr::UNSPECIFIED, port).into())<span class="question-mark">?</span>,
             v6: socket_with_reuse_and_address((std::net::Ipv6Addr::UNSPECIFIED, port).into())<span class="question-mark">?</span>,
@@ -197,12 +263,24 @@
     <span class="kw">pub fn </span>local_ip6_addr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; io::Result&lt;SocketAddr&gt; {
         <span class="self">self</span>.v6.local_addr()
     }
+
+    <span class="kw">pub async fn </span>send_to(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8], target: <span class="kw-2">&amp;</span>SocketAddr) -&gt; io::Result&lt;usize&gt; {
+        <span class="kw">match </span>target {
+            SocketAddr::V4(<span class="kw">_</span>) =&gt; <span class="self">self</span>.v4.send_to(buf, target).<span class="kw">await</span>,
+            SocketAddr::V6(<span class="kw">_</span>) =&gt; <span class="self">self</span>.v6.send_to(buf, target).<span class="kw">await</span>,
+        }
+    }
 }
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">crate</span>::test_utils::available_addr;
-    <span class="kw">use </span><span class="kw">crate</span>::utils::net::DualDomainSocket;
+    <span class="kw">use </span><span class="kw">crate</span>::test_utils::{available_addr, TestHelper};
+    <span class="kw">use </span><span class="kw">crate</span>::utils::net::DualStackLocalSocket;
+    <span class="kw">use </span>std::str::from_utf8;
+    <span class="kw">use </span>std::sync::Arc;
+    <span class="kw">use </span>std::time::Duration;
+    <span class="kw">use </span>tokio::sync::oneshot;
+    <span class="kw">use </span>tokio::time::timeout;
 
     <span class="attribute">#[tokio::test]
     </span><span class="kw">async fn </span>socket_with_reuse() {
@@ -220,8 +298,36 @@
 
     <span class="attribute">#[tokio::test]
     </span><span class="kw">async fn </span>dual_domain_socket() {
+        <span class="kw">let </span><span class="kw-2">mut </span>t = TestHelper::default();
+
         <span class="kw">let </span>expected = available_addr().<span class="kw">await</span>;
-        <span class="kw">let </span>socket = DualDomainSocket::new(expected.port()).unwrap();
+        <span class="kw">let </span>socket = Arc::new(DualStackLocalSocket::new(expected.port()).unwrap());
+
+        <span class="comment">// TODO: when DualStackSocket is used everywhere, add a test for Ipv6 as well.
+        </span><span class="kw">let </span>echo_addr = t.run_echo_server().<span class="kw">await</span>;
+
+        <span class="kw">let </span>(packet_tx, packet_rx) = oneshot::channel::&lt;String&gt;();
+        <span class="kw">let </span>socket_recv = socket.clone();
+        tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1024</span>];
+            <span class="kw">let </span>(size, <span class="kw">_</span>) = socket_recv.recv_from(<span class="kw-2">&amp;mut </span>buf).<span class="kw">await</span>.unwrap();
+            packet_tx
+                .send(from_utf8(<span class="kw-2">&amp;</span>buf[..size]).unwrap().to_string())
+                .unwrap();
+        });
+
+        <span class="kw">let </span>msg = <span class="string">&quot;hello&quot;</span>;
+        socket
+            .send_to(msg.as_bytes(), <span class="kw-2">&amp;</span>echo_addr.to_socket_addr().<span class="kw">await</span>.unwrap())
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="macro">assert_eq!</span>(
+            msg,
+            timeout(Duration::from_secs(<span class="number">5</span>), packet_rx)
+                .<span class="kw">await
+                </span>.expect(<span class="string">&quot;should not timeout&quot;</span>)
+                .unwrap()
+        );
     }
 }
 </code></pre></div>
