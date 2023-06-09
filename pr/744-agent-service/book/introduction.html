@@ -189,6 +189,38 @@ proxy. To see a basic usage of the command-line interface run through the
 for deploying quilkin for your game network.</li>
 </ul>
 <pre><code class="language-shell">$ quilkin --help
+warning: struct `DualDomainSocket` is never constructed
+  --&gt; src/utils/net.rs:54:12
+   |
+54 | pub struct DualDomainSocket {
+   |            ^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: associated function `new` is never used
+  --&gt; src/utils/net.rs:60:12
+   |
+60 |     pub fn new(port: u16) -&gt; Result&lt;DualDomainSocket&gt; {
+   |            ^^^
+
+warning: associated function `recv_from` is never used
+  --&gt; src/utils/net.rs:67:18
+   |
+67 |     pub async fn recv_from(&amp;self, buf: &amp;mut [u8]) -&gt; io::Result&lt;(usize, SocketAddr)&gt; {
+   |                  ^^^^^^^^^
+
+warning: associated function `local_ipv4_addr` is never used
+  --&gt; src/utils/net.rs:80:12
+   |
+80 |     pub fn local_ipv4_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
+   |            ^^^^^^^^^^^^^^^
+
+warning: associated function `local_ip6_addr` is never used
+  --&gt; src/utils/net.rs:84:12
+   |
+84 |     pub fn local_ip6_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
+   |            ^^^^^^^^^^^^^^
+
 The Command-Line Interface for Quilkin
 
 Usage: quilkin [OPTIONS] &lt;COMMAND&gt;

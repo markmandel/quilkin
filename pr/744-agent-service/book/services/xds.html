@@ -156,6 +156,38 @@ complexity of a full xDS management control plane via integrations with popular
 projects and common architecture patterns.</p>
 <p>To view all the providers and options for the <code>manage</code> subcommand, run:</p>
 <pre><code class="language-shell">$ quilkin manage --help
+warning: struct `DualDomainSocket` is never constructed
+  --&gt; src/utils/net.rs:54:12
+   |
+54 | pub struct DualDomainSocket {
+   |            ^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: associated function `new` is never used
+  --&gt; src/utils/net.rs:60:12
+   |
+60 |     pub fn new(port: u16) -&gt; Result&lt;DualDomainSocket&gt; {
+   |            ^^^
+
+warning: associated function `recv_from` is never used
+  --&gt; src/utils/net.rs:67:18
+   |
+67 |     pub async fn recv_from(&amp;self, buf: &amp;mut [u8]) -&gt; io::Result&lt;(usize, SocketAddr)&gt; {
+   |                  ^^^^^^^^^
+
+warning: associated function `local_ipv4_addr` is never used
+  --&gt; src/utils/net.rs:80:12
+   |
+80 |     pub fn local_ipv4_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
+   |            ^^^^^^^^^^^^^^^
+
+warning: associated function `local_ip6_addr` is never used
+  --&gt; src/utils/net.rs:84:12
+   |
+84 |     pub fn local_ip6_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
+   |            ^^^^^^^^^^^^^^
+
 Runs Quilkin as a xDS management server, using `provider` as a configuration source
 
 Usage: quilkin manage [OPTIONS] &lt;COMMAND&gt;
