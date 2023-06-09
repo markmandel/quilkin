@@ -153,14 +153,6 @@
 proxy.</p>
 <p>To view all the options for the <code>proxy</code> subcommand, run: </p>
 <pre><code class="language-shell">$ quilkin proxy --help
-warning: use of deprecated function `base64::decode`: Use Engine::decode
-  --&gt; src/config/providers/k8s/agones.rs:79:38
-   |
-79 |                         .map(base64::decode)
-   |                                      ^^^^^^
-   |
-   = note: `#[warn(deprecated)]` on by default
-
 Run Quilkin as a UDP reverse proxy
 
 Usage: quilkin proxy [OPTIONS]

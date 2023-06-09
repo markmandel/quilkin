@@ -165,14 +165,6 @@ relay's ADS endpoint, you use the same <code>--management-server</code> argument
 connecting to control planes.</p>
 <p>To view all options for the <code>relay</code> subcommand, run:</p>
 <pre><code class="language-shell">$ quilkin relay --help
-warning: use of deprecated function `base64::decode`: Use Engine::decode
-  --&gt; src/config/providers/k8s/agones.rs:79:38
-   |
-79 |                         .map(base64::decode)
-   |                                      ^^^^^^
-   |
-   = note: `#[warn(deprecated)]` on by default
-
 Runs Quilkin as a relay service that runs a Manager Discovery Service (mDS) for accepting cluster and configuration information from xDS management services, and exposing it as a single merged xDS service for proxy services
 
 Usage: quilkin relay [OPTIONS] [COMMAND]
