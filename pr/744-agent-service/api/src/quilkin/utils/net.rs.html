@@ -248,10 +248,10 @@
         <span class="macro">select! </span>{
             v4 = <span class="self">self</span>.v4.recv_from(<span class="kw-2">&amp;mut </span>v4_buf) =&gt; {
                 buf.copy_from_slice(v4_buf.as_slice());
-                <span class="kw">return </span>v4
+                v4
             }
             v6 = <span class="self">self</span>.v6.recv_from(buf) =&gt; {
-                <span class="kw">return </span>v6
+                v6
             }
         }
     }
