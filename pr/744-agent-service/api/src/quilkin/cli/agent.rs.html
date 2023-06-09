@@ -100,6 +100,8 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2023 Google LLC
  *
@@ -197,7 +199,9 @@
             <span class="prelude-val">None
         </span>};
 
-        <span class="kw">let </span>_qcmp_task = <span class="kw">crate</span>::protocol::spawn(<span class="self">self</span>.qcmp_port).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">tracing::trace!</span>(<span class="string">&quot;Protocol: Spawning...&quot;</span>);
+        <span class="kw">crate</span>::protocol::spawn(<span class="self">self</span>.qcmp_port).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">tracing::trace!</span>(<span class="string">&quot;Protocol: ... Spawned!&quot;</span>);
 
         shutdown_rx.changed().<span class="kw">await</span>.map_err(From::from)
     }

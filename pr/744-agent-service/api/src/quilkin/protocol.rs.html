@@ -448,13 +448,6 @@
 <span id="448">448</span>
 <span id="449">449</span>
 <span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2023 Google LLC
  *
@@ -473,10 +466,10 @@
 
 </span><span class="doccomment">//! Logic for parsing and generating Quilkin Control Message Protocol (QCMP) messages.
 
-</span><span class="kw">use </span>std::net::SocketAddr;
-
-<span class="kw">use </span>nom::bytes::complete;
+</span><span class="kw">use </span>nom::bytes::complete;
 <span class="kw">use </span>tracing::Instrument;
+
+<span class="kw">use </span><span class="kw">crate</span>::utils::net;
 
 <span class="comment">// Magic number to distinguish control packets from regular traffic.
 </span><span class="kw">const </span>MAGIC_NUMBER: <span class="kw-2">&amp;</span>[u8] = <span class="string">b&quot;QLKN&quot;</span>;
@@ -489,65 +482,58 @@
 
 <span class="kw">type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
 
-<span class="kw">pub async fn </span>spawn(port: u16) -&gt; std::io::Result&lt;Vec&lt;tokio::task::JoinHandle&lt;()&gt;&gt;&gt; {
-    <span class="kw">let </span>ipv4: SocketAddr = (std::net::Ipv4Addr::UNSPECIFIED, port).into();
-    <span class="kw">let </span>ipv6: SocketAddr = (std::net::Ipv6Addr::UNSPECIFIED, port).into();
-    <span class="kw">let </span><span class="kw-2">mut </span>tasks = Vec::new();
+<span class="kw">pub async fn </span>spawn(port: u16) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    <span class="kw">let </span>socket = net::DualStackLocalSocket::new(port)<span class="question-mark">?</span>;
+    <span class="kw">let </span>v4_addr = socket.local_ipv4_addr()<span class="question-mark">?</span>;
+    <span class="kw">let </span>v6_addr = socket.local_ip6_addr()<span class="question-mark">?</span>;
+    tokio::spawn(
+        <span class="kw">async move </span>{
+            <span class="comment">// Initialize a buffer for the UDP packet. We use the maximum size of a UDP
+            // packet, which is the maximum value of 16 a bit integer.
+            </span><span class="kw">let </span><span class="kw-2">mut </span>input_buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; <span class="number">16</span>];
+            <span class="kw">let </span><span class="kw-2">mut </span>output_buf = Vec::new();
 
-    <span class="macro">tracing::info!</span>(%port, <span class="string">&quot;spawning IPv4 and IPv6 QCMP sockets&quot;</span>);
-    <span class="kw">for </span>(address, socket) <span class="kw">in </span>[
-        (ipv4, tokio::net::UdpSocket::bind(ipv4).<span class="kw">await</span><span class="question-mark">?</span>),
-        (ipv6, tokio::net::UdpSocket::bind(ipv6).<span class="kw">await</span><span class="question-mark">?</span>),
-    ] {
-        tasks.push(tokio::spawn(
-            <span class="kw">async move </span>{
-                <span class="comment">// Initialize a buffer for the UDP packet. We use the maximum size of a UDP
-                // packet, which is the maximum value of 16 a bit integer.
-                </span><span class="kw">let </span><span class="kw-2">mut </span>input_buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; <span class="number">16</span>];
-                <span class="kw">let </span><span class="kw-2">mut </span>output_buf = Vec::new();
-                <span class="kw">loop </span>{
-                    <span class="macro">tracing::debug!</span>(%address, <span class="string">&quot;awaiting qcmp packets&quot;</span>);
+            <span class="kw">loop </span>{
+                <span class="macro">tracing::debug!</span>(%v4_addr, %v6_addr, <span class="string">&quot;awaiting qcmp packets&quot;</span>);
 
-                    <span class="kw">match </span>socket.recv_from(<span class="kw-2">&amp;mut </span>input_buf).<span class="kw">await </span>{
-                        <span class="prelude-val">Ok</span>((size, source)) =&gt; {
-                            <span class="kw">let </span>received_at = chrono::Utc::now().timestamp_nanos();
-                            <span class="kw">let </span>contents = <span class="kw-2">&amp;</span>input_buf[..size];
+                <span class="kw">match </span>socket.recv_from(<span class="kw-2">&amp;mut </span>input_buf).<span class="kw">await </span>{
+                    <span class="prelude-val">Ok</span>((size, source)) =&gt; {
+                        <span class="kw">let </span>received_at = chrono::Utc::now().timestamp_nanos();
+                        <span class="kw">let </span>contents = <span class="kw-2">&amp;</span>input_buf[..size];
 
-                            <span class="kw">let </span>command = <span class="kw">match </span>Protocol::parse(contents) {
-                                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(command)) =&gt; command,
-                                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
-                                    <span class="macro">tracing::debug!</span>(<span class="string">&quot;rejected non-qcmp packet&quot;</span>);
-                                    <span class="kw">continue</span>;
-                                }
-                                <span class="prelude-val">Err</span>(error) =&gt; {
-                                    <span class="macro">tracing::debug!</span>(%error, <span class="string">&quot;rejected malformed packet&quot;</span>);
-                                    <span class="kw">continue</span>;
-                                }
-                            };
+                        <span class="kw">let </span>command = <span class="kw">match </span>Protocol::parse(contents) {
+                            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(command)) =&gt; command,
+                            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
+                                <span class="macro">tracing::debug!</span>(<span class="string">&quot;rejected non-qcmp packet&quot;</span>);
+                                <span class="kw">continue</span>;
+                            }
+                            <span class="prelude-val">Err</span>(error) =&gt; {
+                                <span class="macro">tracing::debug!</span>(%error, <span class="string">&quot;rejected malformed packet&quot;</span>);
+                                <span class="kw">continue</span>;
+                            }
+                        };
 
-                            <span class="kw">let </span>Protocol::Ping { client_timestamp, nonce, } = command <span class="kw">else </span>{
+                        <span class="kw">let </span>Protocol::Ping { client_timestamp, nonce, } = command <span class="kw">else </span>{
                             <span class="macro">tracing::warn!</span>(<span class="string">&quot;rejected unsupported QCMP packet&quot;</span>);
                             <span class="kw">continue</span>;
                         };
 
-                            Protocol::ping_reply(nonce, client_timestamp, received_at)
-                                .encode_into_buffer(<span class="kw-2">&amp;mut </span>output_buf);
+                        Protocol::ping_reply(nonce, client_timestamp, received_at)
+                            .encode_into_buffer(<span class="kw-2">&amp;mut </span>output_buf);
 
-                            <span class="kw">if let </span><span class="prelude-val">Err</span>(error) = socket.send_to(<span class="kw-2">&amp;</span>output_buf, source).<span class="kw">await </span>{
-                                <span class="macro">tracing::warn!</span>(%error, <span class="string">&quot;error responsing to ping&quot;</span>);
-                            }
-
-                            output_buf.clear();
+                        <span class="kw">if let </span><span class="prelude-val">Err</span>(error) = socket.send_to(<span class="kw-2">&amp;</span>output_buf, <span class="kw-2">&amp;</span>source).<span class="kw">await </span>{
+                            <span class="macro">tracing::warn!</span>(%error, <span class="string">&quot;error responding to ping&quot;</span>);
                         }
-                        <span class="prelude-val">Err</span>(error) =&gt; <span class="macro">tracing::warn!</span>(%error, <span class="string">&quot;error receiving packet&quot;</span>),
+
+                        output_buf.clear();
                     }
+                    <span class="prelude-val">Err</span>(error) =&gt; <span class="macro">tracing::warn!</span>(%error, <span class="string">&quot;error receiving packet&quot;</span>),
                 }
             }
-            .instrument(<span class="macro">tracing::info_span!</span>(<span class="string">&quot;qcmp_task&quot;</span>, %address)),
-        ));
-    }
-
-    <span class="prelude-val">Ok</span>(tasks)
+        }
+        .instrument(<span class="macro">tracing::info_span!</span>(<span class="string">&quot;qcmp_task&quot;</span>, %v4_addr, %v6_addr)),
+    );
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// The set of possible QCMP commands.

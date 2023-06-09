@@ -189,44 +189,6 @@ proxy. To see a basic usage of the command-line interface run through the
 for deploying quilkin for your game network.</li>
 </ul>
 <pre><code class="language-shell">$ quilkin --help
-warning: struct `DualStackLocalSocket` is never constructed
-  --&gt; src/utils/net.rs:56:12
-   |
-56 | pub struct DualStackLocalSocket {
-   |            ^^^^^^^^^^^^^^^^^^^^
-   |
-   = note: `#[warn(dead_code)]` on by default
-
-warning: associated function `new` is never used
-  --&gt; src/utils/net.rs:62:12
-   |
-62 |     pub fn new(port: u16) -&gt; Result&lt;DualStackLocalSocket&gt; {
-   |            ^^^
-
-warning: associated function `recv_from` is never used
-  --&gt; src/utils/net.rs:80:18
-   |
-80 |     pub async fn recv_from(&amp;self, buf: &amp;mut [u8]) -&gt; io::Result&lt;(usize, SocketAddr)&gt; {
-   |                  ^^^^^^^^^
-
-warning: associated function `local_ipv4_addr` is never used
-  --&gt; src/utils/net.rs:93:12
-   |
-93 |     pub fn local_ipv4_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
-   |            ^^^^^^^^^^^^^^^
-
-warning: associated function `local_ip6_addr` is never used
-  --&gt; src/utils/net.rs:97:12
-   |
-97 |     pub fn local_ip6_addr(&amp;self) -&gt; io::Result&lt;SocketAddr&gt; {
-   |            ^^^^^^^^^^^^^^
-
-warning: associated function `send_to` is never used
-   --&gt; src/utils/net.rs:101:18
-    |
-101 |     pub async fn send_to(&amp;self, buf: &amp;[u8], target: &amp;SocketAddr) -&gt; io::Result&lt;usize&gt; {
-    |                  ^^^^^^^
-
 The Command-Line Interface for Quilkin
 
 Usage: quilkin [OPTIONS] &lt;COMMAND&gt;
