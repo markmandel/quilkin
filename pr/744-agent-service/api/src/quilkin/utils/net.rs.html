@@ -164,6 +164,21 @@
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
 <a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -243,14 +258,18 @@
         })
     }
 
-    <span class="kw">pub async fn </span>recv_from(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; io::Result&lt;(usize, SocketAddr)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>v4_buf = <span class="macro">vec!</span>[<span class="number">0</span>; buf.len()];
+    <span class="comment">// Receives datagrams from either an ipv4 address or ipv6. Match on the returned [SocketAddr] to
+    // determine if the received data is in the ipv4_buf or ipv6_buf on a successful result.
+    </span><span class="kw">pub async fn </span>recv_from(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        v4_buf: <span class="kw-2">&amp;mut </span>[u8],
+        v6_buf: <span class="kw-2">&amp;mut </span>[u8],
+    ) -&gt; io::Result&lt;(usize, SocketAddr)&gt; {
         <span class="macro">select! </span>{
-            v4 = <span class="self">self</span>.v4.recv_from(<span class="kw-2">&amp;mut </span>v4_buf) =&gt; {
-                buf.copy_from_slice(v4_buf.as_slice());
+            v4 = <span class="self">self</span>.v4.recv_from(v4_buf) =&gt; {
                 v4
             }
-            v6 = <span class="self">self</span>.v6.recv_from(buf) =&gt; {
+            v6 = <span class="self">self</span>.v6.recv_from(v6_buf) =&gt; {
                 v6
             }
         }
@@ -276,6 +295,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::test_utils::{available_addr, TestHelper};
     <span class="kw">use </span><span class="kw">crate</span>::utils::net::DualStackLocalSocket;
+    <span class="kw">use </span>std::net::SocketAddr;
     <span class="kw">use </span>std::str::from_utf8;
     <span class="kw">use </span>std::sync::Arc;
     <span class="kw">use </span>std::time::Duration;
@@ -309,10 +329,20 @@
         <span class="kw">let </span>(packet_tx, packet_rx) = oneshot::channel::&lt;String&gt;();
         <span class="kw">let </span>socket_recv = socket.clone();
         tokio::spawn(<span class="kw">async move </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1024</span>];
-            <span class="kw">let </span>(size, <span class="kw">_</span>) = socket_recv.recv_from(<span class="kw-2">&amp;mut </span>buf).<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>v4_buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1024</span>];
+            <span class="kw">let </span><span class="kw-2">mut </span>v6_buf = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1024</span>];
+            <span class="kw">let </span>(size, addr) = socket_recv
+                .recv_from(<span class="kw-2">&amp;mut </span>v4_buf, <span class="kw-2">&amp;mut </span>v6_buf)
+                .<span class="kw">await
+                </span>.unwrap();
+
+            <span class="kw">let </span>contents = <span class="kw">match </span>addr {
+                SocketAddr::V4(<span class="kw">_</span>) =&gt; <span class="kw-2">&amp;</span>v4_buf[..size],
+                SocketAddr::V6(<span class="kw">_</span>) =&gt; <span class="kw-2">&amp;</span>v6_buf[..size],
+            };
+
             packet_tx
-                .send(from_utf8(<span class="kw-2">&amp;</span>buf[..size]).unwrap().to_string())
+                .send(from_utf8(contents).unwrap().to_string())
                 .unwrap();
         });
 
