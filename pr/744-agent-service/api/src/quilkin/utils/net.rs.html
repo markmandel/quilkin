@@ -178,7 +178,6 @@
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -198,8 +197,7 @@
 </span><span class="kw">use </span>std::{io, net::SocketAddr};
 
 <span class="kw">use </span>socket2::{Protocol, Socket, Type};
-<span class="kw">use </span>tokio::net::UdpSocket;
-<span class="kw">use </span>tokio::select;
+<span class="kw">use </span>tokio::{net::UdpSocket, select};
 
 <span class="kw">use </span><span class="kw">crate</span>::Result;
 
@@ -258,7 +256,7 @@
         })
     }
 
-    <span class="comment">// Receives datagrams from either an ipv4 address or ipv6. Match on the returned [SocketAddr] to
+    <span class="comment">// Receives datagrams from either an ipv4 address or ipv6. Match on the returned [`SocketAddr`] to
     // determine if the received data is in the ipv4_buf or ipv6_buf on a successful result.
     </span><span class="kw">pub async fn </span>recv_from(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
