@@ -498,7 +498,7 @@
     /// for this test, we should only have single Agones integration test in this suite, since they
     /// could easily collide with each other.
     </span><span class="kw">async fn </span>agones_token_router() {
-        quilkin::test_utils::enable_tracing_log();
+        quilkin::test_utils::enable_log(tracing::Level::DEBUG);
 
         <span class="kw">let </span>client = Client::new().<span class="kw">await</span>;
 
