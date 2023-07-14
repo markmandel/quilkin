@@ -440,6 +440,10 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -488,7 +492,8 @@
     };
 
     <span class="kw">use crate</span>::{
-        fleet, is_deployment_ready, is_fleet_ready, quilkin_config_map, quilkin_container, Client,
+        debug_pods, fleet, is_deployment_ready, is_fleet_ready, quilkin_config_map,
+        quilkin_container, Client,
     };
 
     <span class="kw">const </span>PROXY_DEPLOYMENT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;quilkin-proxies&quot;</span>;
@@ -498,7 +503,7 @@
     /// for this test, we should only have single Agones integration test in this suite, since they
     /// could easily collide with each other.
     </span><span class="kw">async fn </span>agones_token_router() {
-        quilkin::test_utils::enable_log(tracing::Level::DEBUG);
+        quilkin::test_utils::enable_log(<span class="string">&quot;agones=debug&quot;</span>);
 
         <span class="kw">let </span>client = Client::new().<span class="kw">await</span>;
 
@@ -585,13 +590,16 @@ filters:
         <span class="macro">assert_eq!</span>(<span class="string">&quot;ACK: ALLOCATE\n&quot;</span>, response);
 
         <span class="comment">// Proxy Deployment should be ready, since there is now an endpoint
-        </span>timeout(
+        </span><span class="kw">if </span>timeout(
             Duration::from_secs(<span class="number">30</span>),
             await_condition(deployments.clone(), PROXY_DEPLOYMENT, is_deployment_ready()),
         )
         .<span class="kw">await
-        </span>.expect(<span class="string">&quot;Quilkin proxy deployment should be ready&quot;</span>)
-        .unwrap();
+        </span>.is_err()
+        {
+            debug_pods(<span class="kw-2">&amp;</span>client, <span class="string">&quot;role=proxy&quot;</span>.into()).<span class="kw">await</span>;
+            <span class="macro">panic!</span>(<span class="string">&quot;Quilkin proxy deployment should be ready&quot;</span>);
+        }
 
         <span class="comment">// keep trying to send the packet to the proxy until it works, since distributed systems are eventually consistent.
         </span><span class="kw">let </span><span class="kw-2">mut </span>response: String = <span class="string">&quot;not-found&quot;</span>.into();
