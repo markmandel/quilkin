@@ -194,17 +194,13 @@ management server for each of the Quilkin <a href="../../services/proxy.html">Pr
 clusters feed configuration information into a single relay endpoint via a <code>quilkin agent</code>, in this example we'll 
 use a single cluster for demonstrative purposes.</p>
 </blockquote>
-<h2 id="2-install-quilkin-agones-relay"><a class="header" href="#2-install-quilkin-agones-relay">2. Install Quilkin Agones Relay</a></h2>
-<p>To install Quilkin as an Agones integrated xDS control plane, we can create a deployment of Quilkin running as
-<code>quilkin relay</code>, with the appropriate permissions.</p>
-<h2 id="2-install-quilkin-agones-xds-provider"><a class="header" href="#2-install-quilkin-agones-xds-provider">2. Install Quilkin Agones xDS Provider</a></h2>
-<p>To install Quilkin as an Agones integrated xDS control plane, we can create a deployment of Quilkin running as
-<code>quilkin manage agones</code>, with the appropriate permissions.</p>
+<h2 id="2-install-quilkin-relay-and-agones-agent"><a class="header" href="#2-install-quilkin-relay-and-agones-agent">2. Install Quilkin Relay and Agones Agent</a></h2>
+<p>To install Quilkin as an Agones integrated relay control plane, we can create a deployment of Quilkin running as
+<code>quilkin relay</code> with a corresponding Agones agent, <code>quilkin agent agones</code>, with the appropriate permissions.</p>
 <p>Run the following:</p>
-<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-xds/xds-control-plane.yaml
+<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-relay/relay-control-plane.yaml
 </code></pre>
-<p>This applies several resources to your cluster:
-q</p>
+<p>This applies several resources to your cluster:</p>
 <ol>
 <li>A <a href="https://kubernetes.io/docs/concepts/configuration/configmap/">ConfigMap</a> with a <a href="../../services/proxy/filters/capture.html">Capture</a> and <a href="../../services/proxy/filters/token_router.html">TokenRouter</a> Filter set up to route packets to Endpoints, to be the base 
 configuration for all the Quilkin proxies.</li>
