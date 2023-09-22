@@ -244,7 +244,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-5bf3acd
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-8868fc9
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -653,9 +653,9 @@ proxies will route to the Allocated GameServer, and you can play a gamee!</p>
 only be accessible through Quilkin, via utilising the <a href="deployment/quickstarts/../../services/proxy/filters/token_router.html">TokenRouter</a> Filter to
 provide routing and access control to the Allocated <code>GameServer</code> instances.</p>
 <p>To do this, we'll take advantage of the Quilkin <a href="deployment/quickstarts/../../services/relay.html">Relay</a> to provide 
-an out-of-the-box multi-cluster control plane, and the <a href="deployment/quickstarts/../../services/agent.html">Agones Agent</a>
+an out-of-the-box multi-cluster xDS control plane, and the <a href="deployment/quickstarts/../../services/agent.html">Agones Agent</a>
 to send information from the cluster(s) to the relay, which can be used as a
-management server for the load balancers.</p>
+management server for each of the Quilkin <a href="deployment/quickstarts/../../services/proxy.html">Proxy</a> instances.</p>
 <blockquote>
 <p>While the application of <code>quilkin relay</code> is to ultimately provide a solution where multiple Agones
 clusters feed configuration information into a single relay endpoint via a <code>quilkin agent</code>, in this example we'll 
@@ -670,7 +670,8 @@ use a single cluster for demonstrative purposes.</p>
 <p>Run the following:</p>
 <pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-xds/xds-control-plane.yaml
 </code></pre>
-<p>This applies several resources to your cluster:</p>
+<p>This applies several resources to your cluster:
+q</p>
 <ol>
 <li>A <a href="https://kubernetes.io/docs/concepts/configuration/configmap/">ConfigMap</a> with a <a href="deployment/quickstarts/../../services/proxy/filters/capture.html">Capture</a> and <a href="deployment/quickstarts/../../services/proxy/filters/token_router.html">TokenRouter</a> Filter set up to route packets to Endpoints, to be the base 
 configuration for all the Quilkin proxies.</li>
