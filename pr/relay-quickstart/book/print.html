@@ -244,7 +244,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-daecd67
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-5bf3acd
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -658,12 +658,12 @@ to send information from the cluster(s) to the relay, which can be used as a
 management server for the load balancers.</p>
 <blockquote>
 <p>While the application of <code>quilkin relay</code> is to ultimately provide a solution where multiple Agones
-clusters feed configuration information into a single relay endpoint, in this example we'll use a single cluster for 
-demonstrative purposes.</p>
+clusters feed configuration information into a single relay endpoint via a <code>quilkin agent</code>, in this example we'll 
+use a single cluster for demonstrative purposes.</p>
 </blockquote>
 <h2 id="2-install-quilkin-agones-relay"><a class="header" href="#2-install-quilkin-agones-relay">2. Install Quilkin Agones Relay</a></h2>
 <p>To install Quilkin as an Agones integrated xDS control plane, we can create a deployment of Quilkin running as
-<code>quilkin manage agones</code>, with the appropriate permissions.</p>
+<code>quilkin relay</code>, with the appropriate permissions.</p>
 <h2 id="2-install-quilkin-agones-xds-provider-1"><a class="header" href="#2-install-quilkin-agones-xds-provider-1">2. Install Quilkin Agones xDS Provider</a></h2>
 <p>To install Quilkin as an Agones integrated xDS control plane, we can create a deployment of Quilkin running as
 <code>quilkin manage agones</code>, with the appropriate permissions.</p>
