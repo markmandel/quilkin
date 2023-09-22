@@ -189,6 +189,11 @@ provide routing and access control to the Allocated <code>GameServer</code> inst
 an out-of-the-box multi-cluster control plane, and the <a href="../../services/agent.html">Agones Agent</a>
 to send information from the cluster(s) to the relay, which can be used as a
 management server for the load balancers.</p>
+<blockquote>
+<p>While the application of <code>quilkin relay</code> is to ultimately provide a solution where multiple Agones
+clusters feed configuration information into a single relay endpoint, in this example we'll use a single cluster for 
+demonstrative purposes.</p>
+</blockquote>
 <h2 id="2-install-quilkin-agones-relay"><a class="header" href="#2-install-quilkin-agones-relay">2. Install Quilkin Agones Relay</a></h2>
 <p>To install Quilkin as an Agones integrated xDS control plane, we can create a deployment of Quilkin running as
 <code>quilkin manage agones</code>, with the appropriate permissions.</p>
