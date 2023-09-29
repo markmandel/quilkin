@@ -244,7 +244,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-0f98b5a
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-2619d56
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -672,10 +672,10 @@ use a single cluster for demonstrative purposes.</p>
 <li>A <a href="https://kubernetes.io/docs/concepts/configuration/configmap/">ConfigMap</a> with a <a href="deployment/quickstarts/../../services/proxy/filters/capture.html">Capture</a> and <a href="deployment/quickstarts/../../services/proxy/filters/token_router.html">TokenRouter</a> Filter set up to route packets to Endpoints, to be the base 
 configuration for all the Quilkin proxies.</li>
 <li>Appropriate <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">RBAC</a> permissions for the 
-<code>quilkin manage agones</code> process to inspect Agones resources.</li>
-<li>A matching <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a>  that runs the 
-<code>quilkin relay</code> process, a deployment for the <code>quilkin agent</code> process and a
-<a href="https://kubernetes.io/docs/concepts/services-networking/service/">Service</a> that the Quilkin proxies can connect to,
+<code>quilkin agent agones</code> process to inspect Agones resources.</li>
+<li>A <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a>  that runs the 
+<code>quilkin relay</code> process, a matching Deployment for the <code>quilkin agent</code> process and a
+<a href="https://kubernetes.io/docs/concepts/services-networking/service/">Service</a> that the Quilkin agents can send configuration information to, and the Proxies can connect to,
 to get their Filter and Endpoint configuration from.</li>
 </ol>
 <p>Now we can run <code>kubectl get pods</code> until we see that the Pod for the Deployment is up and running.</p>
