@@ -1,17 +1,17 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Quilkin Book</title>
-        <meta name="robots" content="noindex" />
+        <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
         
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -32,7 +32,7 @@
         <!-- Custom theme stylesheets -->
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
@@ -62,24 +62,29 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
+            var body = document.querySelector('body');
             var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -117,9 +122,9 @@
                                 <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -244,7 +249,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-2619d56
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-d700a84
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -681,26 +686,26 @@ to get their Filter and Endpoint configuration from.</li>
 <p>Now we can run <code>kubectl get pods</code> until we see that the Pod for the Deployment is up and running.</p>
 <pre><code class="language-shell">$ kubectl get pods
 NAME                                    READY   STATUS    RESTARTS   AGE
-quilkin-manage-agones-54b787654-9dbvp   1/1     Running   0          76s
+quilkin-agones-agent-9dd6699bd-qh7cq    1/1     Running   0          6s
+quilkin-relay-agones-55fbd69f5d-cdh9k   1/1     Running   0          6s
 </code></pre>
-<p>We can now run <code>kubectl get service quilkin-manage-agones</code> and see the
-service that is generated in front of the above Deployment for our Quilkin proxies to connect to and receive their 
-configuration information from.</p>
-<pre><code class="language-shell">$ kubectl get service quilkin-manage-agones
-NAME                    TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
-quilkin-manage-agones   ClusterIP   10.104.2.72   &lt;none&gt;        80/TCP    1m23s
+<p>We can now run <code>kubectl get service quilkin-relay-agones</code> and see the
+service that is generated in front of the above Quilkin Relay Deployment for our Quilkin Proxies to connect to and 
+receive their configuration information from.</p>
+<pre><code class="language-shell">$ kubectl get service quilkin-relay-agones
+NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+quilkin-relay-agones   ClusterIP   10.103.243.246   &lt;none&gt;        7800/TCP,7900/TCP   57s
 </code></pre>
 <h2 id="3-install-quilkin-proxy-pool-1"><a class="header" href="#3-install-quilkin-proxy-pool-1">3. Install Quilkin Proxy Pool</a></h2>
-<p>To install the Quilkin Proxy pool which connects to the above xDS provider, we can create a Deployment of Quilkin 
+<p>To install the Quilkin Proxy pool which connects to the above Relay xDS provider, we can create a Deployment of Quilkin 
 proxy instances that point to the aforementioned Service, like so:</p>
-<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-xds/proxy-pool.yaml
+<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-relay/proxy-pool.yaml
 </code></pre>
-<p>This will set up three instances of Quilkin running as <code>quilkin proxy --management-server http://quilkin-manage-agones:80</code> 
-all connected to the <code>quilkin-manage-agones</code> service.</p>
+<p>This will set up three instances of Quilkin running as <code>quilkin proxy --management-server http://quilkin-relay-agones:7900</code> all of which are connected to the <code>quilkin-relay-agones</code> service.</p>
 <p>Now we can run <code>kubectl get pods</code> until we see that the Pods for the proxy Deployment is up and running.</p>
 <pre><code class="language-shell">$ kubectl get pods                                                                                                          
 NAME                                    READY   STATUS    RESTARTS   AGE
-quilkin-manage-agones-54b787654-9dbvp   1/1     Running   0          5m7s
+quilkin-relay-agones-54b787654-9dbvp   1/1     Running   0          5m7s
 quilkin-proxies-78965c446d-dqvjg        1/1     Running   0          6s
 quilkin-proxies-78965c446d-fr6zs        1/1     Running   0          6s
 quilkin-proxies-78965c446d-m4rr7        1/1     Running   0          6s
@@ -714,7 +719,7 @@ quilkin-proxies-78965c446d-m4rr7        1/1     Running   0          6s
 nicely formatted JSON output.</p>
 </blockquote>
 <pre><code class="language-shell">$ curl -s http://localhost:8000/config
-{&quot;admin&quot;:{&quot;address&quot;:&quot;0.0.0.0:8000&quot;},&quot;clusters&quot;:{},&quot;filters&quot;:[{&quot;name&quot;:&quot;quilkin.filters.capture.v1alpha1.Capture&quot;,&quot;config&quot;:{&quot;metadataKey&quot;:&quot;quilkin.dev/capture&quot;,&quot;suffix&quot;:{&quot;size&quot;:3,&quot;remove&quot;:true}}},{&quot;name&quot;:&quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,&quot;config&quot;:null}],&quot;id&quot;:&quot;quilkin-proxies-78965c446d-dqvjg&quot;,&quot;management_servers&quot;:[{&quot;address&quot;:&quot;http://quilkin-manage-agones:80&quot;}],&quot;port&quot;:7000,&quot;version&quot;:&quot;v1alpha1&quot;,&quot;maxmind_db&quot;:null}%       
+{&quot;admin&quot;:{&quot;address&quot;:&quot;0.0.0.0:8000&quot;},&quot;clusters&quot;:{},&quot;filters&quot;:[{&quot;name&quot;:&quot;quilkin.filters.capture.v1alpha1.Capture&quot;,&quot;config&quot;:{&quot;metadataKey&quot;:&quot;quilkin.dev/capture&quot;,&quot;suffix&quot;:{&quot;size&quot;:3,&quot;remove&quot;:true}}},{&quot;name&quot;:&quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,&quot;config&quot;:null}],&quot;id&quot;:&quot;quilkin-proxies-78965c446d-dqvjg&quot;,&quot;management_servers&quot;:[{&quot;address&quot;:&quot;http://quilkin-relay-agones:80&quot;}],&quot;port&quot;:7000,&quot;version&quot;:&quot;v1alpha1&quot;,&quot;maxmind_db&quot;:null}%       
 </code></pre>
 <p>This shows us the current configuration of the proxies coming from the xDS server created via <code>quilkin manage  agones</code>. The most interesting part that we see here, is that we have a matching set of 
 <a href="deployment/quickstarts/../../services/proxy/filters.html">Filters</a> that are found in the <code>ConfigMap</code> in the 
@@ -780,7 +785,7 @@ our authentication and routing token (&quot;NDU2&quot;).</p>
 </blockquote>
 <p>Let's run <code>curl -s http://localhost:8000/config</code> again, so we can see what has changed!</p>
 <pre><code class="language-shell">$ curl -s http://localhost:8000/config
-{&quot;admin&quot;:{&quot;address&quot;:&quot;0.0.0.0:8000&quot;},&quot;clusters&quot;:{&quot;default&quot;:{&quot;localities&quot;:[{&quot;locality&quot;:null,&quot;endpoints&quot;:[{&quot;address&quot;:&quot;34.168.170.51:7226&quot;,&quot;metadata&quot;:{&quot;quilkin.dev&quot;:{&quot;tokens&quot;:[&quot;NDU2&quot;]}}}]}]}},&quot;filters&quot;:[{&quot;name&quot;:&quot;quilkin.filters.capture.v1alpha1.Capture&quot;,&quot;config&quot;:{&quot;metadataKey&quot;:&quot;quilkin.dev/capture&quot;,&quot;suffix&quot;:{&quot;size&quot;:3,&quot;remove&quot;:true}}},{&quot;name&quot;:&quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,&quot;config&quot;:null}],&quot;id&quot;:&quot;quilkin-proxies-78965c446d-tfgsj&quot;,&quot;management_servers&quot;:[{&quot;address&quot;:&quot;http://quilkin-manage-agones:80&quot;}],&quot;port&quot;:7000,&quot;version&quot;:&quot;v1alpha1&quot;,&quot;maxmind_db&quot;:null}%
+{&quot;admin&quot;:{&quot;address&quot;:&quot;0.0.0.0:8000&quot;},&quot;clusters&quot;:{&quot;default&quot;:{&quot;localities&quot;:[{&quot;locality&quot;:null,&quot;endpoints&quot;:[{&quot;address&quot;:&quot;34.168.170.51:7226&quot;,&quot;metadata&quot;:{&quot;quilkin.dev&quot;:{&quot;tokens&quot;:[&quot;NDU2&quot;]}}}]}]}},&quot;filters&quot;:[{&quot;name&quot;:&quot;quilkin.filters.capture.v1alpha1.Capture&quot;,&quot;config&quot;:{&quot;metadataKey&quot;:&quot;quilkin.dev/capture&quot;,&quot;suffix&quot;:{&quot;size&quot;:3,&quot;remove&quot;:true}}},{&quot;name&quot;:&quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,&quot;config&quot;:null}],&quot;id&quot;:&quot;quilkin-proxies-78965c446d-tfgsj&quot;,&quot;management_servers&quot;:[{&quot;address&quot;:&quot;http://quilkin-relay-agones:80&quot;}],&quot;port&quot;:7000,&quot;version&quot;:&quot;v1alpha1&quot;,&quot;maxmind_db&quot;:null}%
 </code></pre>
 <p>Looking under <code>clusters</code> &gt; <code>localities</code> &gt; <code>endpoints</code> we can see an address and token that matches up with the 
 <code>GameServer</code> record we created above!</p>
