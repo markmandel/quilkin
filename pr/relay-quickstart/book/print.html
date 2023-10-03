@@ -249,7 +249,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-d700a84
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-96c0d08
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -703,14 +703,15 @@ proxy instances that point to the aforementioned Service, like so:</p>
 </code></pre>
 <p>This will set up three instances of Quilkin running as <code>quilkin proxy --management-server http://quilkin-relay-agones:7900</code> all of which are connected to the <code>quilkin-relay-agones</code> service.</p>
 <p>Now we can run <code>kubectl get pods</code> until we see that the Pods for the proxy Deployment is up and running.</p>
-<pre><code class="language-shell">$ kubectl get pods                                                                                                          
+<pre><code class="language-shell">$ kubectl get pods                  
 NAME                                    READY   STATUS    RESTARTS   AGE
-quilkin-relay-agones-54b787654-9dbvp   1/1     Running   0          5m7s
-quilkin-proxies-78965c446d-dqvjg        1/1     Running   0          6s
-quilkin-proxies-78965c446d-fr6zs        1/1     Running   0          6s
-quilkin-proxies-78965c446d-m4rr7        1/1     Running   0          6s
+quilkin-agones-agent-9dd6699bd-5brzf    1/1     Running   0          18s
+quilkin-proxies-7d9bbbccdf-5mz4l        1/1     Running   0          7s
+quilkin-proxies-7d9bbbccdf-9vd59        1/1     Running   0          7s
+quilkin-proxies-7d9bbbccdf-vwn2f        1/1     Running   0          7s
+quilkin-relay-agones-55fbd69f5d-k2n7b   1/1     Running   0          18s
 </code></pre>
-<p>Let's take this one step further, and check the configuration of the proxies that should have come from the <code>quilkin  manage agones</code> instance.</p>
+<p>Let's take this one step further, and check the configuration of the proxies that should have come from the <code>quilkin  agent agones</code> instance and passed through the <code>quilkin relay instance</code> into each of the proxies.</p>
 <p>In another terminal, run:  <code>kubectl port-forward deployments/quilkin-proxies 8000</code>, to port forward the
 <a href="deployment/quickstarts/../admin.html">admin endpoint</a> locally, which we can then query.</p>
 <p>Go back to your original terminal and run <code>curl -s http://localhost:8000/config</code> </p>
@@ -718,12 +719,39 @@ quilkin-proxies-78965c446d-m4rr7        1/1     Running   0          6s
 <p>If you have <a href="https://stedolan.github.io/jq/">jq</a> installed, run <code>curl -s http://localhost:8000/config | jq</code> for a
 nicely formatted JSON output.</p>
 </blockquote>
-<pre><code class="language-shell">$ curl -s http://localhost:8000/config
-{&quot;admin&quot;:{&quot;address&quot;:&quot;0.0.0.0:8000&quot;},&quot;clusters&quot;:{},&quot;filters&quot;:[{&quot;name&quot;:&quot;quilkin.filters.capture.v1alpha1.Capture&quot;,&quot;config&quot;:{&quot;metadataKey&quot;:&quot;quilkin.dev/capture&quot;,&quot;suffix&quot;:{&quot;size&quot;:3,&quot;remove&quot;:true}}},{&quot;name&quot;:&quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,&quot;config&quot;:null}],&quot;id&quot;:&quot;quilkin-proxies-78965c446d-dqvjg&quot;,&quot;management_servers&quot;:[{&quot;address&quot;:&quot;http://quilkin-relay-agones:80&quot;}],&quot;port&quot;:7000,&quot;version&quot;:&quot;v1alpha1&quot;,&quot;maxmind_db&quot;:null}%       
+<pre><code class="language-shell">$ curl -s http://localhost:8000/config | jq
+{
+  &quot;clusters&quot;: [
+    {
+      &quot;endpoints&quot;: [],
+      &quot;locality&quot;: null
+    }
+  ],
+  &quot;filters&quot;: [
+    {
+      &quot;name&quot;: &quot;quilkin.filters.capture.v1alpha1.Capture&quot;,
+      &quot;label&quot;: null,
+      &quot;config&quot;: {
+        &quot;metadataKey&quot;: &quot;quilkin.dev/capture&quot;,
+        &quot;suffix&quot;: {
+          &quot;size&quot;: 3,
+          &quot;remove&quot;: true
+        }
+      }
+    },
+    {
+      &quot;name&quot;: &quot;quilkin.filters.token_router.v1alpha1.TokenRouter&quot;,
+      &quot;label&quot;: null,
+      &quot;config&quot;: null
+    }
+  ],
+  &quot;id&quot;: &quot;quilkin-proxies-7d9bbbccdf-9vd59&quot;,
+  &quot;version&quot;: &quot;v1alpha1&quot;
+}
 </code></pre>
-<p>This shows us the current configuration of the proxies coming from the xDS server created via <code>quilkin manage  agones</code>. The most interesting part that we see here, is that we have a matching set of 
+<p>This shows us the current configuration of the proxies coming from the xDS server created via <code>quilkin agent  agones</code>. The most interesting part that we see here, is that we have a matching set of 
 <a href="deployment/quickstarts/../../services/proxy/filters.html">Filters</a> that are found in the <code>ConfigMap</code> in the 
-<a href="https://github.com/googleforgames/quilkin/blob/pr/relay-quickstart/examples/agones-xonotic-xds/xds-control-plane.yaml">xds-control-plane.yaml</a>
+<a href="https://github.com/googleforgames/quilkin/blob/pr/relay-quickstart/examples/agones-xonotic-relay/relay-control-plane.yaml">relay-control-plane.yaml</a>
 we installed earlier.</p>
 <h2 id="4-create-the-agones-fleet-1"><a class="header" href="#4-create-the-agones-fleet-1">4. Create the Agones Fleet</a></h2>
 <p>Now we will create an <a href="https://agones.dev/site/docs/reference/fleet/">Agones Fleet</a> to spin up all our Xonotic 
