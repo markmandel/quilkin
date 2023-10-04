@@ -249,7 +249,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-7a29e25
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-4f2e8e0
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -473,8 +473,8 @@ edit either!</p>
 </ul>
 <h2 id="1-overview"><a class="header" href="#1-overview">1. Overview</a></h2>
 <p>In this quickstart, we'll be setting up an example <a href="https://xonotic.org/">Xonotic</a> <a href="https://agones.dev/">Agones</a>
-Fleet, that will only be accessible through Quilkin, via utilising the <a href="deployment/quickstarts/../../services/proxy/filters/token_router.html">TokenRouter</a>
-Filter to provide routing and access control to the Allocated <code>GameServer</code> instances.</p>
+Fleet, that will only be accessible through Quilkin that is hosted within the same cluster, utilising the 
+<a href="deployment/quickstarts/../../services/proxy/filters/token_router.html">TokenRouter</a> Filter to provide routing and access control to the Allocated <code>GameServer</code> instances.</p>
 <p>To do this, we'll take advantage of the Quilkin <a href="deployment/quickstarts/../../services/xds/providers/agones.html">Agones xDS Provider</a> to provide
 an out-of-the-box control plane for integration between Agones and <a href="deployment/quickstarts/../../services/xds.html">Quilkin's xDS configuration API</a> with
 minimal effort.</p>
