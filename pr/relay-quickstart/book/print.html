@@ -249,7 +249,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-b70e7ae
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-50d400f
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -713,7 +713,7 @@ quilkin-relay-agones-55fbd69f5d-k2n7b   1/1     Running   0          18s
 </code></pre>
 <p>Let's take this one step further, and check the configuration of the proxies that should have come from the <code>quilkin  agent agones</code> instance and passed through the <code>quilkin relay instance</code> into each of the proxies.</p>
 <p>In another terminal, run:  <code>kubectl port-forward deployments/quilkin-proxies 8000</code>, to port forward the
-<a href="deployment/quickstarts/../admin.html">admin endpoint</a> locally, which we can then query.</p>
+<a href="deployment/quickstarts/../admin.html">admin endpoint</a> locally to port 8001, which we can then query.</p>
 <p>Go back to your original terminal and run <code>curl -s http://localhost:8001/config</code> </p>
 <blockquote>
 <p>If you have <a href="https://stedolan.github.io/jq/">jq</a> installed, run <code>curl -s http://localhost:8001/config | jq</code> for a
