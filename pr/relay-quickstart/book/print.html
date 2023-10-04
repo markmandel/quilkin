@@ -249,7 +249,7 @@ your local machine through <a href="installation.html#cargo">Cargo</a>.</p>
 <dl>
   <dt><strong>Source / Method</strong></dt>
   <dd>
-<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-96c0d08
+<pre><code>us-docker.pkg.dev/quilkin/release/quilkin:0.7.0-dev-d42db7e
 </code></pre>
 </dd>
   <dt><strong>Notes</strong></dt>
@@ -757,8 +757,8 @@ we installed earlier.</p>
 <p>Now we will create an <a href="https://agones.dev/site/docs/reference/fleet/">Agones Fleet</a> to spin up all our Xonotic 
 game servers.</p>
 <p>Thankfully, Agones Fleets require no specific configuration to work with Quilkin proxies, so this yaml is a 
-<a href="https://github.com/googleforgames/quilkin/blob/pr/relay-quickstart/examples/agones-xonotic-xds/fleet.yaml">standard Agones Fleet configuration</a></p>
-<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-xds/fleet.yaml
+<a href="https://github.com/googleforgames/quilkin/blob/pr/relay-quickstart/examples/agones-xonotic-relay/fleet.yaml">standard Agones Fleet configuration</a></p>
+<pre><code class="language-shell">kubectl apply -f https://raw.githubusercontent.com/googleforgames/quilkin/pr/relay-quickstart/examples/agones-xonotic-relay/fleet.yaml
 </code></pre>
 <p>Run <code>kubectl get gameservers</code> until all the <code>GameServer</code> records show that they are <code>Ready</code> and able to take players.</p>
 <pre><code class="language-shell">$ kubectl get gameservers
