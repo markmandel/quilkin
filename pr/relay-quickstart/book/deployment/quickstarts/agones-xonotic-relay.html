@@ -247,12 +247,12 @@ quilkin-relay-agones-55fbd69f5d-k2n7b   1/1     Running   0          18s
 <p>Let's take this one step further, and check the configuration of the proxies that should have come from the <code>quilkin  agent agones</code> instance and passed through the <code>quilkin relay instance</code> into each of the proxies.</p>
 <p>In another terminal, run:  <code>kubectl port-forward deployments/quilkin-proxies 8000</code>, to port forward the
 <a href="../admin.html">admin endpoint</a> locally, which we can then query.</p>
-<p>Go back to your original terminal and run <code>curl -s http://localhost:8000/config</code> </p>
+<p>Go back to your original terminal and run <code>curl -s http://localhost:8001/config</code> </p>
 <blockquote>
-<p>If you have <a href="https://stedolan.github.io/jq/">jq</a> installed, run <code>curl -s http://localhost:8000/config | jq</code> for a
+<p>If you have <a href="https://stedolan.github.io/jq/">jq</a> installed, run <code>curl -s http://localhost:8001/config | jq</code> for a
 nicely formatted JSON output.</p>
 </blockquote>
-<pre><code class="language-shell">$ curl -s http://localhost:8000/config | jq
+<pre><code class="language-shell">$ curl -s http://localhost:8001/config | jq
 {
   &quot;clusters&quot;: [
     {
@@ -344,8 +344,8 @@ our authentication and routing token (&quot;NDU2&quot;).</p>
 <blockquote>
 <p>You should use something more cryptographically random than <code>456</code> in your application.</p>
 </blockquote>
-<p>Let's run <code>curl -s http://localhost:8000/config</code> again, so we can see what has changed!</p>
-<pre><code class="language-shell">❯ curl -s http://localhost:8000/config | jq
+<p>Let's run <code>curl -s http://localhost:8001/config</code> again, so we can see what has changed!</p>
+<pre><code class="language-shell">❯ curl -s http://localhost:8001/config | jq
 {
   &quot;clusters&quot;: [
     {
@@ -410,16 +410,17 @@ packet that passes through it, via the power of a
 <p>We then take the EXTERNAL-IP and port from the <code>quilkin-proxies</code> service, and replace the<code>${LOADBALANCER_IP}</code>
 with it in <code>client-token.yaml</code>.</p>
 <p>Run this edited configuration locally with your quilkin binary as <code>quilkin -c ./client-token.yaml proxy</code>:</p>
-<pre><code class="language-shell">$ quilkin -c ./client-token.yaml proxy
-{&quot;timestamp&quot;:&quot;2022-10-07T22:10:47.257635Z&quot;,&quot;level&quot;:&quot;INFO&quot;,&quot;fields&quot;:{&quot;message&quot;:&quot;Starting Quilkin&quot;,&quot;version&quot;:&quot;0.4.0-dev&quot;,&quot;commit&quot;:&quot;c77260a2526542c564829a2c66935c60f00adcd2&quot;},&quot;target&quot;:&quot;quilkin::cli&quot;}
-{&quot;timestamp&quot;:&quot;2022-10-07T22:10:47.258273Z&quot;,&quot;level&quot;:&quot;INFO&quot;,&quot;fields&quot;:{&quot;message&quot;:&quot;Starting&quot;,&quot;port&quot;:7000,&quot;proxy_id&quot;:&quot;markmandel45&quot;},&quot;target&quot;:&quot;quilkin::proxy&quot;}
-{&quot;timestamp&quot;:&quot;2022-10-07T22:10:47.258321Z&quot;,&quot;level&quot;:&quot;INFO&quot;,&quot;fields&quot;:{&quot;message&quot;:&quot;Starting admin endpoint&quot;,&quot;address&quot;:&quot;[::]:9092&quot;},&quot;target&quot;:&quot;quilkin::admin&quot;}
-{&quot;timestamp&quot;:&quot;2022-10-07T22:10:47.258812Z&quot;,&quot;level&quot;:&quot;INFO&quot;,&quot;fields&quot;:{&quot;message&quot;:&quot;Quilkin is ready&quot;},&quot;target&quot;:&quot;quilkin::proxy&quot;}
+<pre><code class="language-shell">$ ./quilkin --config ./client-token.yaml proxy
+2023-10-04T20:09:07.320780Z  INFO quilkin::cli: src/cli.rs: Starting Quilkin version=&quot;0.7.0-dev&quot; commit=&quot;d42db7e14c2e0e758e9a6eb655ccf4184941066c&quot;
+2023-10-04T20:09:07.321711Z  INFO quilkin::admin: src/admin.rs: Starting admin endpoint address=[::]:8000
+2023-10-04T20:09:07.322089Z  INFO quilkin::cli::proxy: src/cli/proxy.rs: Starting port=7777 proxy_id=&quot;markmandel45&quot;
+2023-10-04T20:09:07.322576Z  INFO quilkin::cli::proxy: src/cli/proxy.rs: Quilkin is ready
+2023-10-04T20:09:07.322692Z  INFO qcmp_task{v4_addr=0.0.0.0:7600 v6_addr=[::]:7600}: quilkin::protocol: src/protocol.rs: awaiting qcmp packets v4_addr=0.0.0.0:7600 v6_addr=[::]:7600
 </code></pre>
-<p>Now connect to the local client proxy on &quot;127.0.0.1:7000&quot; via the &quot;Multiplayer &gt; Address&quot; field in the
+<p>Now connect to the local client proxy on &quot;[::1]:7777&quot; via the &quot;Multiplayer &gt; Address&quot; field in the
 Xonotic client, and Quilkin will take care of appending the routing token to all your UDP packets, which the Quilkin
 proxies will route to the Allocated GameServer, and you can play a gamee!</p>
-<p><img src="xonotic-address.png" alt="xonotic-address.png" /></p>
+<p><img src="xonotic-address-v6.png" alt="xonotic-address-v6.png" /></p>
 <p>...And you didn't have to change the client or the dedicated game server 🤸</p>
 <h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
 <ul>
