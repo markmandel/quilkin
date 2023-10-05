@@ -437,15 +437,6 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -464,6 +455,9 @@
 
 </span><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>std::net::SocketAddr;
+    <span class="kw">use </span>std::{collections::BTreeMap, time::Duration};
+
     <span class="kw">use </span>k8s_openapi::{
         api::{
             apps::v1::{Deployment, DeploymentSpec},
@@ -484,8 +478,6 @@
         Api, ResourceExt,
     };
     <span class="kw">use </span>serial_test::serial;
-    <span class="kw">use </span>std::net::SocketAddr;
-    <span class="kw">use </span>std::{collections::BTreeMap, time::Duration};
     <span class="kw">use </span>tokio::time::timeout;
 
     <span class="kw">use </span>quilkin::{
@@ -494,7 +486,7 @@
     };
 
     <span class="kw">use crate</span>::{
-        debug_pods, fleet, is_deployment_ready, is_fleet_ready, quilkin_config_map,
+        create_token_router_config, debug_pods, fleet, is_deployment_ready, is_fleet_ready,
         quilkin_container, Client,
     };
 
@@ -514,25 +506,9 @@
         <span class="kw">let </span>config_maps: Api&lt;ConfigMap&gt; = client.namespaced_api();
 
         <span class="kw">let </span>pp = PostParams::default();
+        <span class="kw">let </span>dp = DeleteParams::default();
 
-        <span class="kw">let </span>config = <span class="string">r#&quot;
-version: v1alpha1
-filters:
-  - name: quilkin.filters.capture.v1alpha1.Capture # Capture and remove the authentication token
-    config:
-      suffix:
-          size: 3
-          remove: true
-  - name: quilkin.filters.token_router.v1alpha1.TokenRouter
-&quot;#</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>config_map = quilkin_config_map(config);
-        config_map
-            .metadata
-            .labels
-            .get_or_insert(Default::default())
-            .insert(<span class="string">&quot;quilkin.dev/configmap&quot;</span>.into(), <span class="string">&quot;true&quot;</span>.into());
-
-        config_maps.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>config_map).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>config_map = create_token_router_config(<span class="kw-2">&amp;</span>config_maps).<span class="kw">await</span>;
 
         agones_control_plane(<span class="kw-2">&amp;</span>client, deployments.clone()).<span class="kw">await</span>;
         <span class="kw">let </span>proxy_address = quilkin_proxy_deployment(<span class="kw-2">&amp;</span>client, deployments.clone()).<span class="kw">await</span>;
@@ -650,6 +626,12 @@ filters:
             debug_pods(<span class="kw-2">&amp;</span>client, <span class="string">&quot;role=xds&quot;</span>.into()).<span class="kw">await</span>;
         }
         <span class="macro">assert!</span>(failed, <span class="string">&quot;Packet should have failed&quot;</span>);
+
+        <span class="comment">// cleanup
+        </span>config_maps
+            .delete(<span class="kw-2">&amp;</span>config_map.name_unchecked(), <span class="kw-2">&amp;</span>dp)
+            .<span class="kw">await
+            </span>.unwrap();
     }
 
     <span class="doccomment">/// Creates Quilkin xDS management instance that is in the mode to watch Agones GameServers
