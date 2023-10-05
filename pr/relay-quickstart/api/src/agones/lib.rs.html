@@ -679,6 +679,9 @@
 <a href="#679" id="679">679</a>
 <a href="#680" id="680">680</a>
 <a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -752,6 +755,9 @@
 /// for more details.
 </span><span class="kw">pub const </span>GAMESERVER_IMAGE: <span class="kw-2">&amp;</span>str =
     <span class="string">&quot;us-docker.pkg.dev/agones-images/examples/simple-game-server:0.16&quot;</span>;
+
+<span class="doccomment">/// The dynamic metadata key for routing tokens
+</span><span class="kw">pub const </span>TOKEN_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;quilkin.dev/tokens&quot;</span>;
 
 <span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>Client {

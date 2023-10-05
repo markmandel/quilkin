@@ -336,6 +336,7 @@
     <span class="kw">use crate</span>::{
         create_agones_rbac_read_account, create_token_router_config, debug_pods, fleet,
         is_deployment_ready, is_fleet_ready, quilkin_container, quilkin_proxy_deployment, Client,
+        TOKEN_KEY,
     };
 
     <span class="kw">const </span>PROXY_DEPLOYMENT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;quilkin-xds-proxies&quot;</span>;
@@ -392,12 +393,11 @@
         <span class="kw">let </span><span class="kw-2">mut </span>gs = list.items[<span class="number">0</span>].clone();
         <span class="comment">// add routing label to the GameServer
         </span><span class="macro">assert_eq!</span>(<span class="number">3</span>, token.as_bytes().len());
-        <span class="kw">let </span>token_key = <span class="string">&quot;quilkin.dev/tokens&quot;</span>;
         gs.metadata
             .annotations
             .get_or_insert(Default::default())
             .insert(
-                token_key.into(),
+                TOKEN_KEY.into(),
                 base64::Engine::encode(<span class="kw-2">&amp;</span>base64::engine::general_purpose::STANDARD, token),
             );
         gameservers
@@ -459,7 +459,7 @@
         gs.metadata
             .annotations
             .as_mut()
-            .map(|annotations| annotations.remove(token_key).unwrap());
+            .map(|annotations| annotations.remove(TOKEN_KEY).unwrap());
         gameservers.replace(name.as_str(), <span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>gs).<span class="kw">await</span>.unwrap();
         <span class="comment">// now we should send a packet, and not get a response.
         </span><span class="kw">let </span><span class="kw-2">mut </span>failed = <span class="bool-val">false</span>;
