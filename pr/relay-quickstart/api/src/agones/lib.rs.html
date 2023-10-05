@@ -570,6 +570,115 @@
 <a href="#570" id="570">570</a>
 <a href="#571" id="571">571</a>
 <a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -586,14 +695,19 @@
  * limitations under the License.
  */
 
-</span><span class="kw">use </span>std::{
+</span><span class="kw">use </span>std::net::SocketAddr;
+<span class="kw">use </span>std::time::Duration;
+<span class="kw">use </span>std::{
     collections::BTreeMap,
     env,
     time::{SystemTime, UNIX_EPOCH},
 };
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, TryStreamExt};
+<span class="kw">use </span>k8s_openapi::api::apps::v1::DeploymentSpec;
+<span class="kw">use </span>k8s_openapi::api::core::v1::{ContainerPort, Node};
 <span class="kw">use </span>k8s_openapi::api::rbac::v1::PolicyRule;
+<span class="kw">use </span>k8s_openapi::apimachinery::pkg::apis::meta::v1::LabelSelector;
 <span class="kw">use </span>k8s_openapi::{
     api::{
         apps::v1::Deployment,
@@ -608,12 +722,14 @@
     },
     chrono,
 };
+<span class="kw">use </span>kube::runtime::wait::await_condition;
 <span class="kw">use </span>kube::{
     api::{DeleteParams, ListParams, LogParams, PostParams},
     runtime::wait::Condition,
     Api, Resource, ResourceExt,
 };
 <span class="kw">use </span>tokio::sync::OnceCell;
+<span class="kw">use </span>tokio::time::timeout;
 <span class="kw">use </span>tracing::debug;
 
 <span class="kw">use </span>quilkin::config::providers::k8s::agones::{
@@ -864,6 +980,108 @@
     };
     role_bindings.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>binding).<span class="kw">await</span>.unwrap();
     rbac_name.into()
+}
+
+<span class="doccomment">/// Create a Deployment with a singular Quilkin proxy, and return it&#39;s address.
+/// The `name` variable is used as role={name} for label lookup.
+</span><span class="kw">pub async fn </span>quilkin_proxy_deployment(
+    client: <span class="kw-2">&amp;</span>Client,
+    deployments: Api&lt;Deployment&gt;,
+    name: String,
+    host_port: u16,
+    management_server: String,
+) -&gt; SocketAddr {
+    <span class="kw">let </span>pp = PostParams::default();
+    <span class="kw">let </span><span class="kw-2">mut </span>container = quilkin_container(
+        client,
+        <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
+            <span class="string">&quot;proxy&quot;</span>.into(),
+            <span class="macro">format!</span>(<span class="string">&quot;--management-server={management_server}&quot;</span>),
+        ]),
+        <span class="prelude-val">None</span>,
+    );
+
+    <span class="comment">// we&#39;ll use a host port, since spinning up a load balancer takes a long time.
+    // we know that port 7777 is open because this is an Agones cluster and it has associated
+    // firewall rules , and even if we conflict with a GameServer
+    // the k8s scheduler will move us to another node.
+    </span>container.ports = <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[ContainerPort {
+        container_port: <span class="number">7777</span>,
+        host_port: <span class="prelude-val">Some</span>(host_port <span class="kw">as </span>i32),
+        protocol: <span class="prelude-val">Some</span>(<span class="string">&quot;UDP&quot;</span>.into()),
+        ..Default::default()
+    }]);
+
+    <span class="kw">let </span>labels = BTreeMap::from([(<span class="string">&quot;role&quot;</span>.to_string(), name.clone())]);
+    <span class="kw">let </span>deployment = Deployment {
+        metadata: ObjectMeta {
+            name: <span class="prelude-val">Some</span>(name),
+            labels: <span class="prelude-val">Some</span>(labels.clone()),
+            ..Default::default()
+        },
+        spec: <span class="prelude-val">Some</span>(DeploymentSpec {
+            replicas: <span class="prelude-val">Some</span>(<span class="number">1</span>),
+            selector: LabelSelector {
+                match_expressions: <span class="prelude-val">None</span>,
+                match_labels: <span class="prelude-val">Some</span>(labels.clone()),
+            },
+            template: PodTemplateSpec {
+                metadata: <span class="prelude-val">Some</span>(ObjectMeta {
+                    labels: <span class="prelude-val">Some</span>(labels.clone()),
+                    ..Default::default()
+                }),
+                spec: <span class="prelude-val">Some</span>(PodSpec {
+                    containers: <span class="macro">vec!</span>[container],
+                    ..Default::default()
+                }),
+            },
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    <span class="kw">let </span>deployment = deployments.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>deployment).<span class="kw">await</span>.unwrap();
+    <span class="kw">let </span>name = deployment.name_unchecked();
+    <span class="comment">// should not be ready, since there are no endpoints, but let&#39;s wait 3 seconds, make sure it doesn&#39;t do something we don&#39;t expect
+    </span><span class="kw">let </span>result = timeout(
+        Duration::from_secs(<span class="number">3</span>),
+        await_condition(deployments.clone(), name.as_str(), is_deployment_ready()),
+    )
+    .<span class="kw">await</span>;
+    <span class="macro">assert!</span>(result.is_err());
+
+    <span class="comment">// get the address to send data to
+    </span><span class="kw">let </span>pods = client.namespaced_api::&lt;Pod&gt;();
+    <span class="kw">let </span>list = pods
+        .list(<span class="kw-2">&amp;</span>ListParams {
+            label_selector: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;role={name}&quot;</span>)),
+            ..Default::default()
+        })
+        .<span class="kw">await
+        </span>.unwrap();
+    <span class="macro">assert_eq!</span>(<span class="number">1</span>, list.items.len());
+
+    <span class="kw">let </span>nodes: Api&lt;Node&gt; = Api::all(client.kubernetes.clone());
+    <span class="kw">let </span>name = list.items[<span class="number">0</span>]
+        .spec
+        .as_ref()
+        .unwrap()
+        .node_name
+        .as_ref()
+        .unwrap();
+    <span class="kw">let </span>node = nodes.get(name.as_str()).<span class="kw">await</span>.unwrap();
+    <span class="kw">let </span>external_ip = node
+        .status
+        .unwrap()
+        .addresses
+        .unwrap()
+        .iter()
+        .find(|addr| addr.type_ == <span class="string">&quot;ExternalIP&quot;</span>)
+        .unwrap()
+        .address
+        .clone();
+
+    SocketAddr::new(external_ip.parse().unwrap(), host_port)
 }
 
 <span class="doccomment">/// Returns a test GameServer with the UDP test binary that is used for
