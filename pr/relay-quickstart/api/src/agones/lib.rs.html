@@ -564,6 +564,12 @@
 <a href="#564" id="564">564</a>
 <a href="#565" id="565">565</a>
 <a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -792,10 +798,16 @@
     role_bindings: Api&lt;RoleBinding&gt;,
 ) -&gt; String {
     <span class="kw">let </span>pp = PostParams::default();
+    <span class="kw">let </span>rbac_name = <span class="string">&quot;quilkin-agones&quot;</span>;
+
+    <span class="comment">// check if sevice account already exists, otherwise create it.
+    </span><span class="kw">if </span>service_accounts.get(rbac_name).<span class="kw">await</span>.is_ok() {
+        <span class="kw">return </span>rbac_name.into();
+    }
 
     <span class="comment">// create all the rbac rules
-    </span><span class="kw">let </span>rbac_name = <span class="string">&quot;quilkin-agones&quot;</span>;
-    <span class="kw">let </span>rbac_meta = ObjectMeta {
+
+    </span><span class="kw">let </span>rbac_meta = ObjectMeta {
         name: <span class="prelude-val">Some</span>(rbac_name.into()),
         ..Default::default()
     };

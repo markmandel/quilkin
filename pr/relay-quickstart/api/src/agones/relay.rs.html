@@ -156,6 +156,7 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2023 Google LLC All Rights Reserved.
  *
@@ -174,8 +175,7 @@
 
 </span><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::collections::BTreeMap;
-    <span class="kw">use </span>std::time::Duration;
+    <span class="kw">use </span>std::{collections::BTreeMap, time::Duration};
 
     <span class="kw">use </span>k8s_openapi::{
         api::{
@@ -186,8 +186,10 @@
             },
             rbac::v1::{ClusterRole, RoleBinding},
         },
-        apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta},
-        apimachinery::pkg::util::intstr::IntOrString,
+        apimachinery::pkg::{
+            apis::meta::v1::{LabelSelector, ObjectMeta},
+            util::intstr::IntOrString,
+        },
     };
     <span class="kw">use </span>kube::{
         api::{DeleteParams, PostParams},
