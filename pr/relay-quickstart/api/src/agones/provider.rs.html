@@ -410,7 +410,7 @@
                 ConfigMap, ContainerPort, Node, Pod, PodSpec, PodTemplateSpec, Service,
                 ServiceAccount, ServicePort, ServiceSpec,
             },
-            rbac::v1::{ClusterRole, PolicyRule, RoleBinding, RoleRef, Subject},
+            rbac::v1::{ClusterRole, RoleBinding},
         },
         apimachinery::pkg::{
             apis::meta::v1::{LabelSelector, ObjectMeta},
@@ -628,7 +628,7 @@
                     }),
                     spec: <span class="prelude-val">Some</span>(PodSpec {
                         containers: <span class="macro">vec!</span>[container],
-                        service_account_name: <span class="prelude-val">Some</span>(rbac_name.into()),
+                        service_account_name: <span class="prelude-val">Some</span>(rbac_name),
                         ..Default::default()
                     }),
                 },

@@ -562,6 +562,8 @@
 <a href="#562" id="562">562</a>
 <a href="#563" id="563">563</a>
 <a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -585,6 +587,7 @@
 };
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, TryStreamExt};
+<span class="kw">use </span>k8s_openapi::api::rbac::v1::PolicyRule;
 <span class="kw">use </span>k8s_openapi::{
     api::{
         apps::v1::Deployment,
@@ -614,6 +617,7 @@
 
 <span class="kw">mod </span>pod;
 <span class="kw">mod </span>provider;
+<span class="kw">mod </span>relay;
 <span class="kw">mod </span>sidecar;
 
 <span class="attr">#[allow(dead_code)]
