@@ -220,6 +220,12 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2023 Google LLC All Rights Reserved.
  *
@@ -259,13 +265,12 @@
         runtime::wait::await_condition,
         Api, ResourceExt,
     };
-    <span class="kw">use </span>quilkin::test_utils::enable_log;
     <span class="kw">use </span>serial_test::serial;
     <span class="kw">use </span>tokio::time::timeout;
 
     <span class="kw">use crate</span>::{
         create_agones_rbac_read_account, create_token_router_config, debug_pods,
-        is_deployment_ready, quilkin_container, Client,
+        is_deployment_ready, quilkin_container, quilkin_proxy_deployment, Client,
     };
 
     <span class="attr">#[tokio::test]
@@ -274,8 +279,6 @@
     /// for this test, we should only run Agones integration test in a serial manner, since they
     /// could easily collide with each other.
     </span><span class="kw">async fn </span>agones_token_router() {
-        enable_log(<span class="string">&quot;quilkin=debug&quot;</span>);
-
         <span class="kw">let </span>client = Client::new().<span class="kw">await</span>;
         <span class="kw">let </span>config_maps: Api&lt;ConfigMap&gt; = client.namespaced_api();
         <span class="kw">let </span>deployments: Api&lt;Deployment&gt; = client.namespaced_api();
@@ -283,7 +286,16 @@
         <span class="kw">let </span>dp = DeleteParams::default();
 
         <span class="kw">let </span>config_map = create_token_router_config(<span class="kw-2">&amp;</span>config_maps).<span class="kw">await</span>;
-        agones_agent_deployment(<span class="kw-2">&amp;</span>client, deployments).<span class="kw">await</span>;
+        agones_agent_deployment(<span class="kw-2">&amp;</span>client, deployments.clone()).<span class="kw">await</span>;
+
+        <span class="kw">let </span>_proxy_address = quilkin_proxy_deployment(
+            <span class="kw-2">&amp;</span>client,
+            deployments,
+            <span class="string">&quot;quilkin-relay-proxy&quot;</span>.into(),
+            <span class="number">7005</span>,
+            <span class="string">&quot;http://quilkin-manage-agones:7800&quot;</span>.into(),
+        )
+        .<span class="kw">await</span>;
 
         <span class="comment">// cleanup
         </span>config_maps

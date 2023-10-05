@@ -368,7 +368,9 @@
         )
         .<span class="kw">await</span>;
 
-        <span class="comment">// create a fleet so we can ensure that a packet is going to the GameServer we expect, and not
+        <span class="kw">let </span>token = <span class="string">&quot;456&quot;</span>; <span class="comment">// NDU2
+
+        // create a fleet so we can ensure that a packet is going to the GameServer we expect, and not
         // any other.
         </span><span class="kw">let </span>fleet = fleet();
         <span class="kw">let </span>fleet = fleets.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>fleet).<span class="kw">await</span>.unwrap();
@@ -387,15 +389,8 @@
         };
         <span class="kw">let </span>list = gameservers.list(<span class="kw-2">&amp;</span>lp).<span class="kw">await</span>.unwrap();
 
-        <span class="comment">// let&#39;s allocate this specific game server
-        </span><span class="kw">let </span><span class="kw-2">mut </span>t = TestHelper::default();
-        <span class="kw">let </span>(<span class="kw-2">mut </span>rx, socket) = t.open_socket_and_recv_multiple_packets().<span class="kw">await</span>;
-
         <span class="kw">let </span><span class="kw-2">mut </span>gs = list.items[<span class="number">0</span>].clone();
-        <span class="kw">let </span>gs_address = <span class="kw">crate</span>::gameserver_address(<span class="kw-2">&amp;</span>gs);
-
         <span class="comment">// add routing label to the GameServer
-        </span><span class="kw">let </span>token = <span class="string">&quot;456&quot;</span>; <span class="comment">// NDU2
         </span><span class="macro">assert_eq!</span>(<span class="number">3</span>, token.as_bytes().len());
         <span class="kw">let </span>token_key = <span class="string">&quot;quilkin.dev/tokens&quot;</span>;
         gs.metadata
@@ -409,8 +404,13 @@
             .replace(gs.name_unchecked().as_str(), <span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>gs)
             .<span class="kw">await
             </span>.unwrap();
+
+        <span class="kw">let </span>gs_address = <span class="kw">crate</span>::gameserver_address(<span class="kw-2">&amp;</span>gs);
         <span class="comment">// and allocate it such that we have an endpoint.
-        </span>socket
+        // let&#39;s allocate this specific game server
+        </span><span class="kw">let </span><span class="kw-2">mut </span>t = TestHelper::default();
+        <span class="kw">let </span>(<span class="kw-2">mut </span>rx, socket) = t.open_socket_and_recv_multiple_packets().<span class="kw">await</span>;
+        socket
             .send_to(<span class="string">&quot;ALLOCATE&quot;</span>.as_bytes(), gs_address)
             .<span class="kw">await
             </span>.unwrap();
