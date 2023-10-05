@@ -789,8 +789,8 @@
     <span class="kw">let _ </span>= role_bindings.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>role_binding).<span class="kw">await</span>.unwrap();
 }
 
-<span class="doccomment">/// Creates a Service account and related RBAC objects to enable a process to query Agones resources
-/// within a cluster.
+<span class="doccomment">/// Creates a Service account and related RBAC objects to enable a process to query Agones
+/// and ConfigMap resources within a cluster
 </span><span class="kw">pub async fn </span>create_agones_rbac_read_account(
     client: <span class="kw-2">&amp;</span>Client,
     service_accounts: Api&lt;ServiceAccount&gt;,
