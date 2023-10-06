@@ -252,40 +252,6 @@
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2022 Google LLC
  *
@@ -321,7 +287,7 @@
         },
     };
     <span class="kw">use </span>kube::{
-        api::{DeleteParams, ListParams, PostParams},
+        api::{DeleteParams, PostParams},
         runtime::wait::await_condition,
         Api, ResourceExt,
     };
@@ -334,8 +300,8 @@
     };
 
     <span class="kw">use crate</span>::{
-        create_agones_rbac_read_account, create_token_router_config, debug_pods, fleet,
-        is_deployment_ready, is_fleet_ready, quilkin_container, quilkin_proxy_deployment, Client,
+        create_agones_rbac_read_account, create_token_router_config, create_tokenised_gameserver,
+        debug_pods, is_deployment_ready, quilkin_container, quilkin_proxy_deployment, Client,
         TOKEN_KEY,
     };
 
@@ -370,41 +336,7 @@
         .<span class="kw">await</span>;
 
         <span class="kw">let </span>token = <span class="string">&quot;456&quot;</span>; <span class="comment">// NDU2
-
-        // create a fleet so we can ensure that a packet is going to the GameServer we expect, and not
-        // any other.
-        </span><span class="kw">let </span>fleet = fleet();
-        <span class="kw">let </span>fleet = fleets.create(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>fleet).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>name = fleet.name_unchecked();
-        timeout(
-            Duration::from_secs(<span class="number">30</span>),
-            await_condition(fleets.clone(), name.as_str(), is_fleet_ready()),
-        )
-        .<span class="kw">await
-        </span>.expect(<span class="string">&quot;Fleet should be ready&quot;</span>)
-        .unwrap();
-
-        <span class="kw">let </span>lp = ListParams {
-            label_selector: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;agones.dev/fleet={}&quot;</span>, fleet.name_unchecked())),
-            ..Default::default()
-        };
-        <span class="kw">let </span>list = gameservers.list(<span class="kw-2">&amp;</span>lp).<span class="kw">await</span>.unwrap();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>gs = list.items[<span class="number">0</span>].clone();
-        <span class="comment">// add routing label to the GameServer
-        </span><span class="macro">assert_eq!</span>(<span class="number">3</span>, token.as_bytes().len());
-        gs.metadata
-            .annotations
-            .get_or_insert(Default::default())
-            .insert(
-                TOKEN_KEY.into(),
-                base64::Engine::encode(<span class="kw-2">&amp;</span>base64::engine::general_purpose::STANDARD, token),
-            );
-        gameservers
-            .replace(gs.name_unchecked().as_str(), <span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>gs)
-            .<span class="kw">await
-            </span>.unwrap();
-
+        </span><span class="kw">let </span>gs = create_tokenised_gameserver(fleets, gameservers.clone(), token).<span class="kw">await</span>;
         <span class="kw">let </span>gs_address = <span class="kw">crate</span>::gameserver_address(<span class="kw-2">&amp;</span>gs);
         <span class="comment">// and allocate it such that we have an endpoint.
         // let&#39;s allocate this specific game server

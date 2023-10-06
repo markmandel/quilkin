@@ -226,6 +226,13 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
  * Copyright 2023 Google LLC All Rights Reserved.
  *
@@ -268,9 +275,11 @@
     <span class="kw">use </span>serial_test::serial;
     <span class="kw">use </span>tokio::time::timeout;
 
+    <span class="kw">use </span>quilkin::config::providers::k8s::agones::{Fleet, GameServer};
+
     <span class="kw">use crate</span>::{
-        create_agones_rbac_read_account, create_token_router_config, debug_pods,
-        is_deployment_ready, quilkin_container, quilkin_proxy_deployment, Client,
+        create_agones_rbac_read_account, create_token_router_config, create_tokenised_gameserver,
+        debug_pods, is_deployment_ready, quilkin_container, quilkin_proxy_deployment, Client,
     };
 
     <span class="attr">#[tokio::test]
@@ -282,6 +291,8 @@
         <span class="kw">let </span>client = Client::new().<span class="kw">await</span>;
         <span class="kw">let </span>config_maps: Api&lt;ConfigMap&gt; = client.namespaced_api();
         <span class="kw">let </span>deployments: Api&lt;Deployment&gt; = client.namespaced_api();
+        <span class="kw">let </span>fleets: Api&lt;Fleet&gt; = client.namespaced_api();
+        <span class="kw">let </span>gameservers: Api&lt;GameServer&gt; = client.namespaced_api();
 
         <span class="kw">let </span>dp = DeleteParams::default();
 
@@ -296,6 +307,9 @@
             <span class="string">&quot;http://quilkin-manage-agones:7800&quot;</span>.into(),
         )
         .<span class="kw">await</span>;
+
+        <span class="kw">let </span>token = <span class="string">&quot;789&quot;</span>; <span class="comment">// NDU2
+        </span><span class="kw">let </span>_gs = create_tokenised_gameserver(fleets, gameservers.clone(), token).<span class="kw">await</span>;
 
         <span class="comment">// cleanup
         </span>config_maps
