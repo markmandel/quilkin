@@ -243,6 +243,10 @@ mod tests {
     use crate::test::AddressType;
     use crate::{config::Config, filters::*, net::endpoint::Endpoint};
 
+    // TOXO: bring over logging improvements from flaky/agones_token_router
+
+    // TOXO: fix this test, it's really flaky
+
     #[tokio::test]
     async fn token_routing() {
         let mut helper = crate::test::TestHelper::default();

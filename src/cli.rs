@@ -377,6 +377,8 @@ mod tests {
         assert_config(&proxy_config, &datacenter);
     }
 
+    // TOXO: Fix this test, it's so flaky.
+
     #[tokio::test]
     #[ignore = "extremely flaky in CI atm"]
     async fn relay_routing() {
