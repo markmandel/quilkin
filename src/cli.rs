@@ -380,8 +380,10 @@ mod tests {
     // TOXO: Fix this test, it's so flaky.
 
     #[tokio::test]
-    #[ignore = "extremely flaky in CI atm"]
+    // #[ignore = "extremely flaky in CI atm"]
     async fn relay_routing() {
+        enable_log("quilkin=trace");
+
         let mut t = TestHelper::default();
         let (mut rx, server_socket) = t.open_socket_and_recv_multiple_packets().await;
         let filters_file = temp_file!("filters");
@@ -571,6 +573,8 @@ mod tests {
     }
 
     use std::fmt;
+    use crate::test::enable_log;
+
     impl fmt::Display for Token {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.write_str(std::str::from_utf8(&self.inner).unwrap())
